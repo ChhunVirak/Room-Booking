@@ -16,7 +16,7 @@ exports.create = (req, res) => {
     const room = {
         title: req.body.title,
         description: req.body.description,
-        published: req.body.published ? req.body.published : false
+        userId: req.userId,
     };
 
     // Save Room in the database

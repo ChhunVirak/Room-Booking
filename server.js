@@ -1,19 +1,44 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
 
 const db = require("./app/models");
 
-db.sequelize.sync({ force: false }) //force true to drop all table
-    // db.sequelize.sync({ force: true }) //force true to drop all table
-    .then(() =>
-    {
+const DROP = false;
+
+function initialRoles() {
+    if (DROP) {
+        db.role.create({
+            id: 1,
+            name: "user",
+            description: "Can perform any related booking function."
+        });
+
+        db.role.create({
+            id: 2,
+            name: "moderator",
+            description: "Can do everythings except user function."
+        });
+
+        db.role.create({
+            id: 3,
+            name: "admin",
+            description: "Can do everythings!"
+        });
+    }
+
+}
+
+db.sequelize.sync({ force: DROP }) //force true to drop all table
+    .then(() => {
+
+        initialRoles();
+
         console.log("Synced db.");
     })
-    .catch((err) =>
-    {
+    .catch((err) => {
         console.log("Failed to sync db: " + err.message);
     });
 
@@ -30,13 +55,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // simple route
-app.get("/", (req, res) =>
-{
+app.get("/", (req, res) => {
     res.json({ message: "Welcome to bezkoder application." });
 });
 
 //All Route : Call all route here before `app.listen()`
 
+require("./app/routes/auth.routes")(app);
 require("./app/routes/room.routes")(app);
 require("./app/routes/booking.routes")(app);
 
@@ -45,7 +70,8 @@ require("./app/routes/booking.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () =>
-{
-    console.log(`Server is running on port ${ PORT }.`);
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}.`);
 });
+
+

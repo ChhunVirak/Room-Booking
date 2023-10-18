@@ -5,13 +5,11 @@ const Booking = db.booking;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Booking
-exports.create = (req, res) =>
-{
+exports.create = (req, res) => {
     // Validate request
-    if (!req.body.title)
-    {
+    if (!req.body.title) {
         res.status(400).send({
-            message: "Content can not be empty!"
+            message: "title can not be empty!"
         });
         return;
     }
@@ -22,18 +20,16 @@ exports.create = (req, res) =>
         description: req.body.description,
         startDate: req.body.startDate, //YYYY-MM-DD
         endDate: req.body.endDate, //YYYY-MM-DD
-        userId: req.body.userId,
+        userId: req.userId,
         roomId: req.body.roomId,
     };
 
     // Save Booking in the database
     Booking.create(booking)
-        .then(data =>
-        {
+        .then(data => {
             res.send(data);
         })
-        .catch(err =>
-        {
+        .catch(err => {
             // let message;
             // if(err instanceof Sequelize.){}
             // if (err.name === 'SequelizeValidationError') {
@@ -63,10 +59,10 @@ exports.create = (req, res) =>
         });
 };
 //Find All Bookings
-exports.findAll = (req, res) =>
-{
-    const title = req.query.title;
-    var condition = title ? { title: { [ Op.iLike ]: `%${ title }%` } } : null;
+exports.findAll = (req, res) => {
+    const uid = req.userId;
+    var condition = uid ? { userId: uid } : null;
+    // var condition = userId ? { title: { [Op.iLike]: `%${title}%` } } : null;
 
     Booking.findAll({
         where: condition,
@@ -76,12 +72,10 @@ exports.findAll = (req, res) =>
             "description",
         ]
     })
-        .then(data =>
-        {
+        .then(data => {
             res.send(data);
         })
-        .catch(err =>
-        {
+        .catch(err => {
             res.status(500).send({
                 message:
                     err.message || "Some error occurred while retrieving rooms."
@@ -90,29 +84,24 @@ exports.findAll = (req, res) =>
 };
 
 //Delete Bookings by id
-exports.delete = (req, res) =>
-{
+exports.delete = (req, res) => {
     const id = req.params.id;
 
     Booking.destroy({
         where: { id: id }
     })
-        .then(num =>
-        {
-            if (num == 1)
-            {
+        .then(num => {
+            if (num == 1) {
                 res.send({
-                    message: `Booking with id=${ id } was deleted successfully!`
+                    message: `Booking with id=${id} was deleted successfully!`
                 });
-            } else
-            {
+            } else {
                 res.send({
-                    message: `Cannot delete Booking with (id = ${ id }). Maybe Booking was not found!`
+                    message: `Cannot delete Booking with (id = ${id}). Maybe Booking was not found!`
                 });
             }
         })
-        .catch(err =>
-        {
+        .catch(err => {
             res.status(500).send({
                 message: "Could not delete Booking with id = " + id
             });

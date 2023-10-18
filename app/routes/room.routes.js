@@ -1,10 +1,20 @@
+const rooms = require("../controllers/room.controller.js");
+const { authJwt } = require("../middleware");
+
 module.exports = app => {
-    const rooms = require("../controllers/room.controller.js");
+
+    app.use(function (req, res, next) {
+        res.header(
+            "Access-Control-Allow-Headers",
+            "x-access-token, Origin, Content-Type, Accept"
+        );
+        next();
+    });
 
     var router = require("express").Router();
 
     // Create a new Room
-    router.post("/", rooms.create);
+    router.post("/", [authJwt.verifyToken], rooms.create);
 
     // Retrieve all rooms
     router.get("/", rooms.findAll);
