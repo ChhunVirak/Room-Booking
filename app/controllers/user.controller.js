@@ -1,5 +1,5 @@
 const db = require("../models");
-const Room = db.room;
+const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Room
@@ -33,16 +33,17 @@ exports.create = (req, res) => {
 };
 
 //Find All Rooms
-exports.findAll = (req, res) => {
+exports.findAllUsers = (req, res) => {
     const title = req.query.title;
     var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
 
-    Room.findAll({
+    User.findAll({
         where: condition,
         attributes: [
             "id",
-            "title",
-            "description",
+            "username",
+            "email",
+            "roleId"
         ]
     })
         .then(data => {
@@ -55,6 +56,34 @@ exports.findAll = (req, res) => {
             });
         });
 };
+
+
+// get user detail
+exports.getUserDetail = (req, res) => {
+    const title = req.query.title;
+    var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
+
+    User.findByPk({
+        where: condition,
+        attributes: [
+            "id",
+            "username",
+            "email",
+            "roleId"
+        ]
+    })
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving rooms."
+            });
+        });
+};
+
+
 
 //Delete Rooms by id
 exports.delete = (req, res) => {

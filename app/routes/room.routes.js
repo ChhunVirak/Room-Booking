@@ -14,7 +14,13 @@ module.exports = app => {
     var router = require("express").Router();
 
     // Create a new Room
-    router.post("/", [authJwt.verifyToken], rooms.create);
+    router.post("/",
+        [
+            authJwt.verifyToken,
+            authJwt.isModeratorOrAdmin,
+        ],
+        rooms.create
+    );
 
     // Retrieve all rooms
     router.get("/", rooms.findAll);
@@ -29,7 +35,13 @@ module.exports = app => {
     // router.put("/:id", rooms.update);
 
     // Delete a Room with id
-    router.delete("/:id", rooms.delete);
+    router.delete("/:id",
+        [
+            authJwt.verifyToken,
+            authJwt.isModeratorOrAdmin,
+        ],
+        rooms.delete
+    );
 
     // // Create a new Room
     // router.delete("/", rooms.deleteAll);

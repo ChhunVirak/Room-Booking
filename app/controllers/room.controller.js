@@ -66,7 +66,7 @@ exports.delete = (req, res) => {
         .then(num => {
             if (num == 1) {
                 res.send({
-                    message: "Room with id=${id} was deleted successfully!"
+                    message: `Room with id=${id} was deleted successfully!`
                 });
             } else {
                 res.send({

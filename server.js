@@ -62,6 +62,7 @@ app.get("/", (req, res) => {
 //All Route : Call all route here before `app.listen()`
 
 require("./app/routes/auth.routes")(app);
+require("./app/routes/user.routes")(app);
 require("./app/routes/room.routes")(app);
 require("./app/routes/booking.routes")(app);
 

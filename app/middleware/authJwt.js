@@ -27,7 +27,7 @@ const verifyToken = (req, res, next) => {
         });
 };
 
-isAdmin = (req, res, next) => {
+const isAdmin = (req, res, next) => {
     User.findByPk(req.userId).then(user => {
         Role.findByPk(user.roleId).then(role => {
 
@@ -44,7 +44,7 @@ isAdmin = (req, res, next) => {
     });
 };
 
-isModerator = (req, res, next) => {
+const isModerator = (req, res, next) => {
     User.findByPk(req.userId).then(user => {
         Role.findByPk(user.roleId).then(role => {
 
@@ -62,7 +62,7 @@ isModerator = (req, res, next) => {
     });
 };
 
-isModeratorOrAdmin = (req, res, next) => {
+const isModeratorOrAdmin = (req, res, next) => {
     User.findByPk(req.userId).then(user => {
         Role.findByPk(user.roleId).then(role => {
 

@@ -17,7 +17,25 @@ exports.signup = (req, res) => {
         roleId: req.body.roleId,
     })
         .then(user => {
-            res.send({ message: "User registered successfully!" });
+
+            const token = jwt.sign({ id: user.id },
+                config.secret,
+                {
+                    algorithm: 'HS256',
+                    allowInsecureKeySizes: true,
+                    expiresIn: 86400, // 24 hours
+                });
+
+            Role.findByPk(user.roleId).then(role => {
+                res.send({
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    roles: role.name?.toUpperCase(),
+                    accessToken: token
+                });
+            });
+
         })
         .catch(err => {
             res.status(500).send({ message: err.message });
@@ -56,17 +74,17 @@ exports.signin = (req, res) => {
                     expiresIn: 86400, // 24 hours
                 });
 
-            var authorities = [];
+            // var authorities = [];
 
             Role.findByPk(user.roleId).then(role => {
 
-                authorities.push("ROLE_" + role.name.toUpperCase());
+                // authorities.push("ROLE_" + role.name.toUpperCase());
 
                 res.status(200).send({
                     id: user.id,
                     username: user.username,
                     email: user.email,
-                    roles: authorities,
+                    roles: role.name.toUpperCase(),
                     accessToken: token
                 });
             });
@@ -77,7 +95,13 @@ exports.signin = (req, res) => {
 };
 
 exports.findAllRoles = (req, res) => {
-    Role.findAll().then(roles => {
+    Role.findAll({
+        attributes: [
+            "id",
+            "name",
+            "description",
+        ],
+    }).then(roles => {
         res.send(roles);
     }).catch(err => {
         res.status(500).send({ message: err.message });
